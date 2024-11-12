@@ -8,32 +8,41 @@ async function fetchProfessorRating(profName) {
     });
 }
 
-// Inject rating in website
+// Add rating in website
 async function injectRating() {
     const instructorElements = document.querySelectorAll('.instructor-detail');
 
     for (const instructorElement of instructorElements) {
         const nameElement = instructorElement.querySelector('.instructor-name');
 
-
         if (nameElement && !nameElement.querySelector('.rmp-rating')) { 
             const profName = nameElement.innerText.trim();
             const rating = await fetchProfessorRating(profName);
 
-
             const ratingElement = document.createElement('span');
             ratingElement.classList.add('rmp-rating'); 
             ratingElement.innerText = ` | RMP Rating: ${rating}`;
-            ratingElement.style.color = 'green';
             ratingElement.style.fontWeight = 'bold';
             ratingElement.style.marginLeft = '5px';
 
+            // Color Ratings
+            if (rating === "No rating found") {
+                ratingElement.style.color = 'gray';
+            } else {
+                const ratingValue = Number.parseFloat(rating);
+                if (ratingValue >= 4.0) {
+                    ratingElement.style.color = 'green';
+                } else if (ratingValue > 3.5) {
+                    ratingElement.style.color = 'orange';
+                } else {
+                    ratingElement.style.color = 'red';
+                }
+            }
 
             nameElement.appendChild(ratingElement);
         }
     }
 }
-
 
 function observeCourseDetails() {
     const targetNode = document.body;
@@ -41,7 +50,6 @@ function observeCourseDetails() {
 
     const observer = new MutationObserver((mutationsList) => {
         let shouldInject = false;
-        
 
         for (const mutation of mutationsList) {
             if (mutation.type === 'childList') {
@@ -53,7 +61,6 @@ function observeCourseDetails() {
             }
         }
 
-
         if (shouldInject) {
             observer.disconnect(); 
             injectRating().then(() => observer.observe(targetNode, config)); 
@@ -62,6 +69,5 @@ function observeCourseDetails() {
 
     observer.observe(targetNode, config);
 }
-
 
 observeCourseDetails();

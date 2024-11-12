@@ -1,21 +1,25 @@
 {
     "manifest_version": 3,
-    "name": "RMP Rating Injector",
-    "version": "1.0",
+    "name": "Emory Course Atlas Enhanced",
+    "version": "1.2.0",
+    "description": "A Chrome extension to display professor ratings directly on course pages.",
     "permissions": ["storage"],
     "background": {
-        "service_worker": "background.js"
+    "service_worker": "background.js"
+    },
+    "action": {
+    "default_popup": "popup.html"
     },
     "content_scripts": [
-        {
-            "matches": ["<all_urls>"],
-            "js": ["content.js"]
-        }
+    {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+    }
     ],
     "web_accessible_resources": [
-        {
-            "resources": ["ratings.json"],
-            "matches": ["<all_urls>"]
-        }
+    {
+        "resources": ["ratings.json"],
+        "matches": ["<all_urls>"]
+    }
     ]
 }
