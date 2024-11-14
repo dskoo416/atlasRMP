@@ -8,8 +8,8 @@ async function fetchProfessorRating(profName) {
     });
 }
 
-// Add rating in website
-async function injectRating() {
+// Add rating in Emory Course Atlas
+async function injectRatingForCourseAtlas() {
     const instructorElements = document.querySelectorAll('.instructor-detail');
 
     for (const instructorElement of instructorElements) {
@@ -44,30 +44,58 @@ async function injectRating() {
     }
 }
 
-function observeCourseDetails() {
+// OPUS Search Rating
+async function injectRatingForNewSite() {
+    const instructorElements = document.querySelectorAll('.ps_box-value.psc_display-block.psc_padding-bottom0_5em');
+
+    for (const instructorElement of instructorElements) {
+        if (instructorElement.id.startsWith('SSR_CLSRCH_F_WK_SSR_INSTR_LONG_1') && !instructorElement.querySelector('.rmp-rating')) {
+            const profName = instructorElement.innerText.trim();
+            const rating = await fetchProfessorRating(profName);
+
+            const ratingElement = document.createElement('span');
+            ratingElement.classList.add('rmp-rating');
+            ratingElement.innerText = ` ${rating}`;  
+
+            // Color Ratings
+            if (rating === "No rating") {
+                ratingElement.style.color = 'gray';
+            } else {
+                const ratingValue = Number.parseFloat(rating);
+                if (ratingValue >= 4.0) {
+                    ratingElement.style.color = 'green';
+                } else if (ratingValue > 3.5) {
+                    ratingElement.style.color = 'orange';
+                } else {
+                    ratingElement.style.color = 'red';
+                }
+            }
+
+            instructorElement.appendChild(ratingElement);
+        }
+    }
+}
+
+function observeAllSites() {
     const targetNode = document.body;
     const config = { childList: true, subtree: true };
 
-    const observer = new MutationObserver((mutationsList) => {
-        let shouldInject = false;
+    const observer = new MutationObserver(async (mutationsList) => {
+    
+        observer.disconnect();
 
         for (const mutation of mutationsList) {
             if (mutation.type === 'childList') {
-                const instructorSection = document.querySelector('.instructor-detail');
-                if (instructorSection) {
-                    shouldInject = true;
-                    break;
-                }
+            
+                await injectRatingForNewSite();
             }
         }
 
-        if (shouldInject) {
-            observer.disconnect(); 
-            injectRating().then(() => observer.observe(targetNode, config)); 
-        }
+        observer.observe(targetNode, config);
     });
 
     observer.observe(targetNode, config);
 }
 
-observeCourseDetails();
+
+observeAllSites();

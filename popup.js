@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     toggle.addEventListener('click', () => {
         toast.classList.add('show');
         
-
         setTimeout(() => {
             toast.classList.remove('show');
         }, 2000);
