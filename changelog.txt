@@ -1,3 +1,4 @@
+0.4.0: Added Icon
 0.3.0: Added OPUS search support
 0.2.0: Added popup menu when extension is clicked
 0.1.0: Added color (green, orange, red) for different ratings

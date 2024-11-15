@@ -3,7 +3,7 @@ async function fetchProfessorRating(profName) {
     return new Promise((resolve) => {
         chrome.storage.local.get(['ratingsData'], (result) => {
             const ratingsData = result.ratingsData;
-            resolve(ratingsData?.[profName] || "No rating found");
+            resolve(ratingsData?.[profName] || "No Rating");
         });
     });
 }
@@ -26,7 +26,7 @@ async function injectRatingForCourseAtlas() {
             ratingElement.style.marginLeft = '5px';
 
             // Color Ratings
-            if (rating === "No rating found") {
+            if (rating === "No Rating") {
                 ratingElement.style.color = 'gray';
             } else {
                 const ratingValue = Number.parseFloat(rating);
@@ -44,7 +44,7 @@ async function injectRatingForCourseAtlas() {
     }
 }
 
-// OPUS Search Rating
+// Add rating on the new site (OPUS Search)
 async function injectRatingForNewSite() {
     const instructorElements = document.querySelectorAll('.ps_box-value.psc_display-block.psc_padding-bottom0_5em');
 
@@ -58,7 +58,7 @@ async function injectRatingForNewSite() {
             ratingElement.innerText = ` ${rating}`;  
 
             // Color Ratings
-            if (rating === "No rating") {
+            if (rating === "No Rating") {
                 ratingElement.style.color = 'gray';
             } else {
                 const ratingValue = Number.parseFloat(rating);
@@ -81,21 +81,24 @@ function observeAllSites() {
     const config = { childList: true, subtree: true };
 
     const observer = new MutationObserver(async (mutationsList) => {
-    
+        // Temporarily disconnect the observer to avoid duplicate injections
         observer.disconnect();
 
         for (const mutation of mutationsList) {
             if (mutation.type === 'childList') {
-            
+                // Inject ratings on both Emory Course Atlas and OPUS Search when new elements are detected
+                await injectRatingForCourseAtlas();
                 await injectRatingForNewSite();
             }
         }
 
+        // Reconnect the observer to continue monitoring for new elements
         observer.observe(targetNode, config);
     });
 
+    // Start observing the document body for mutations
     observer.observe(targetNode, config);
 }
 
-
+// Start the observer for both sites
 observeAllSites();

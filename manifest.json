@@ -1,25 +1,29 @@
 {
     "manifest_version": 3,
     "name": "Emory Web Enhancer",
-    "version": "1.2.0",
-    "description": "A Chrome extension to display professor ratings directly on course pages.",
+    "version": "0.3.0",
+    "description": "Display professor ratings directly on course atlas and OPUS.",
     "permissions": ["storage"],
     "background": {
-    "service_worker": "background.js"
+        "service_worker": "background.js"
     },
     "action": {
-    "default_popup": "popup.html"
+        "default_popup": "popup.html"
     },
     "content_scripts": [
-    {
-        "matches": ["<all_urls>"],
-        "js": ["content.js"]
-    }
+        {
+            "matches": ["<all_urls>"],
+            "js": ["content.js"]
+        }
     ],
     "web_accessible_resources": [
-    {
-        "resources": ["ratings.json"],
-        "matches": ["<all_urls>"]
+        {
+            "resources": ["ratings.json"],
+            "matches": ["<all_urls>"]
+        }
+    ],
+    "icons": {
+        "16": "icons/icon.png"
+    
     }
-    ]
 }
